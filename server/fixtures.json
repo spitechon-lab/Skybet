@@ -1,0 +1,47 @@
+ "asOf": "2026-10-31",
+ "note": "Real fixtures snapshot. Odds are derived from win probabilities [league, kickoff UTC, home, away, home %, draw %, away %]. Replace with your licensed odds feed.",
+ "leagues": {
+  "epl": "Premier League",
+  "liga": "La Liga"
+ },
+ "fixtures": [
+  [
+   "epl",
+   "2026-10-31T12:30:00Z",
+   "Chelsea",
+   "Man United",
+   48.2,
+   25.2,
+   26.6
+  ],
+  [
+   "epl",
+   "2026-10-31T15:00:00Z",
+   "Bournemouth",
+   "Leeds United",
+   44.5,
+   28.1,
+   27.4
+  ],
+  [
+   "epl",
+   "2026-10-31T15:00:00Z",
+   "Brentford",
+   "Nottingham Forest",
+   46,
+   26.2,
+   27.8
+  ],
+  [
+   "epl",
+   "2026-10-31T15:00:00Z",
+   "Coventry City",
+   "Sunderland",
+   30.9,
+   28.5,
+   40.6
+  ],
+  [
+   "epl",
+   "2026-10-31T15:00:00Z",
+   "Hull City",
