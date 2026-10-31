@@ -152,22 +152,50 @@ function homeView(){const u=me();document.body.className='';
 /* ---------- auth ---------- */
 function authView(reg){document.body.className='';let err='';
   pageShell(reg?'Create account':'Login',`<form class="card" id="af"><h2>${reg?'Join SkyBet':'Welcome back'}</h2>
+  ${reg?`<label class="mute">Country
+    <select name="country" required style="width:100%;margin-bottom:.6rem;padding:.5rem;border-radius:.25rem;background:var(--bg);color:var(--fg);border:1px solid var(--bd)">
+      <option value="KE">Kenya (+254)</option>
+      <option value="UG">Uganda (+256)</option>
+      <option value="TZ">Tanzania (+255)</option>
+    </select>
+  </label>`:''}
   <input name="phone" inputmode="tel" placeholder="Phone number (07XX XXX XXX)" required>
   ${reg?`<label class="mute">Date of birth (18+ only)<input name="dob" type="date" required style="width:100%"></label><input name="ref" placeholder="Referral code (optional)">`:''}
   <input name="password" type="password" placeholder="Password (8+ characters)" minlength="8" required>
+  ${reg?`<input name="cpassword" type="password" placeholder="Confirm Password" minlength="8" required>`:''}
   ${reg?'<label style="display:flex;gap:.6rem;align-items:center"><input type="checkbox" name="ok" required style="width:auto"> I am 18+ and accept the terms</label>':''}
   <p class="err" id="er" role="alert"></p><button class="btn g">${reg?'Create account':'Login'}</button>
   <button type="button" class="link" data-go="${reg?'login':'register'}">${reg?'Have an account? Login':'No account? Join now'}</button></form>`,{nav:false,fab:false});
-  $('#af').onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),er=$('#er');
-    if(!phoneOk(f.phone))return er.textContent='Enter a valid Kenyan phone number, like 0712 345 678.';
+  $('#af').onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),er=$('#er');
+    if(!phoneOk(f.phone))return er.textContent='Enter a valid phone number.';
     const ph=normPhone(f.phone);
-    if(!reg){const u=DB.users[ph];if(!u||u.password!==f.password)return er.textContent='Wrong phone number or password.';DB.session=ph}
-    else{if((Date.now()-new Date(f.dob))/3.15576e10<18)return er.textContent='You must be 18 or older to register.';
-      if(DB.users[ph])return er.textContent='That number is already registered. Please log in.';
-      const r=Object.values(DB.users).find(x=>x.code===(f.ref||'').trim().toUpperCase());
-      DB.users[ph]={phone:ph,password:f.password,balance:0,bonus:0,tx:[],bets:[],notifs:[],code:hex(4).toUpperCase(),refBy:r?r.phone:null,first:true,friends:[],earned:0,verified:true/* set after OTP in production */,redeemed:[],limit:0,excl:0};
-      if(r)r.friends.push(ph);notify(DB.users[ph],'Welcome to SkyBet','Make your first deposit to start playing Aviator.');DB.session=ph}
-    save();tab('home')}}
+    if(reg){
+      if(f.password !== f.cpassword)return er.textContent='Passwords do not match.';
+      if((Date.now()-new Date(f.dob))/3.15576e10<18)return er.textContent='You must be 18 or older to register.';
+    }
+    const endpoint = reg ? `${CONFIG.apiBase}/api/register` : `${CONFIG.apiBase}/api/login`;
+    const payload = reg 
+      ? { phone: ph, password: f.password, country: f.country, dob: f.dob, ref: f.ref }
+      : { phone: ph, password: f.password };
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if(!res.ok) return er.textContent = data.message || data.error || 'Authentication failed.';
+      if(data.user) DB.users[ph] = data.user;
+      DB.session = ph;
+      if(data.token) localStorage.setItem('token', data.token);
+      save();
+      tab('home');
+    } catch(err) {
+      er.textContent = 'Server connection error. Please try again.';
+    }
+  }
+}
+
 
 /* ---------- profile and account pages ---------- */
 function profileView(){if(need('My Account','Log in to see your account.'))return;const u=me();
