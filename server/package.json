@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "description": "SkyBet: Aviator + sports betting with M-PESA (TinyPesa) deposits",
-  "engines": { "node": ">=20.6" },
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "start": "node --env-file=.env server/index.js",
+    "start": "node server/index.js",
     "dev": "node --watch --env-file=.env server/index.js"
   },
   "dependencies": {
