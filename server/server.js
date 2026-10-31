@@ -13,7 +13,7 @@
    BALANCE         GET  /api/me            -> {balance, bonus}  (cents)
    ============================================================= */
 const DEMO_MODE=false;
-const CONFIG={apiBase:'/api',paybill:'1846126'/* set '' to hide manual paybill (TinyPesa is prompt-only) */,minDeposit:1000,minWithdraw:5000,minBet:500,maxBet:10000000,support:{wa:'254000000000',tel:'+254000000000',mail:'support@skybet.example'}};
+const CONFIG={apiBase:'https://skybet-o2ws.onrender.com/api',paybill:'1846126'/* set '' to hide manual paybill (TinyPesa is prompt-only) */,minDeposit:1000,minWithdraw:5000,minBet:500,maxBet:10000000,support:{wa:'254000000000',tel:'+254000000000',mail:'support@skybet.example'}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const API={demo:DEMO_MODE,
   async req(method,p,b){const r=await fetch(CONFIG.apiBase+p,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+(DB.token||'')},body:b?JSON.stringify(b):undefined});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Request failed.');return d},
